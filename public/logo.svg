@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="laserGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle/Frame -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#334155" stroke-width="8" />
+  <!-- Laser Beam -->
+  <path d="M 10 50 L 90 50" stroke="url(#laserGradient)" stroke-width="4" stroke-linecap="round" />
+  <!-- Spark/Precision point -->
+  <circle cx="50" cy="50" r="6" fill="#f97316">
+    <animate attributeName="r" values="5;7;5" dur="1s" repeatCount="indefinite" />
+  </circle>
+  <!-- Monogram -->
+  <text x="50" y="42" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="14" fill="#334155">B</text>
+  <text x="50" y="68" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="14" fill="#334155">L</text>
+</svg>

@@ -154,19 +154,27 @@ const AboutSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * i }}
-                className="group relative overflow-hidden rounded-sm"
+                className="group relative flex flex-col md:block overflow-hidden rounded-sm bg-card md:bg-transparent"
               >
-                <div className="aspect-[3/4] overflow-hidden">
+                <div className="aspect-[3/4] overflow-hidden relative">
                   <img
                     src={member.image}
                     alt={member.name}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 md:opacity-60 group-hover:opacity-100 transition-opacity" />
+                  
+                  {/* Desktop Title Overlay */}
+                  <div className="hidden md:block absolute bottom-0 left-0 p-6 w-full">
+                    <h3 className="font-display text-xl font-bold text-white mb-1">{member.name}</h3>
+                    <p className="font-body text-xs tracking-widest uppercase text-primary font-bold">{member.designation}</p>
+                  </div>
                 </div>
-                <div className="absolute bottom-0 left-0 p-6 w-full">
-                  <h3 className="font-display text-xl font-bold text-white mb-1">{member.name}</h3>
-                  <p className="font-body text-xs tracking-widest uppercase text-primary font-bold">{member.designation}</p>
+                
+                {/* Mobile Title (Below Image) */}
+                <div className="md:hidden p-4 bg-card border-t border-border/50">
+                  <h3 className="font-display text-lg font-bold text-foreground mb-1">{member.name}</h3>
+                  <p className="font-body text-[10px] tracking-widest uppercase text-primary font-bold">{member.designation}</p>
                 </div>
               </motion.div>
             ))}
