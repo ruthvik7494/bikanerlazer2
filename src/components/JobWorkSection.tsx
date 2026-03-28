@@ -77,16 +77,7 @@ const JobWorkSection = () => {
             </motion.h2>
           </motion.div>
 
-          <motion.button
-            className="group/btn flex items-center gap-2 font-display text-xs font-bold tracking-[0.2em] uppercase text-primary hover:text-primary/80 transition-colors pb-2 border-b border-primary/20"
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            Explore Services
-            <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-          </motion.button>
+
         </div>
 
         {/* Service Cards - 4 cards */}

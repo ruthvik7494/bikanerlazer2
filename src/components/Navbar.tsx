@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll } from 'framer-motion';
 import { Menu } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Sheet,
   SheetContent,
@@ -11,63 +12,91 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
+  const location = useLocation();
 
   useEffect(() => {
     const unsub = scrollY.on('change', (v) => setScrolled(v > 50));
     return unsub;
   }, [scrollY]);
 
-  const links = ['About', 'Job Work', 'Machinery', 'Designs', 'Contact'];
+  const links = [
+    { name: 'About', path: '/#about' },
+    { name: 'Job Work', path: '/job-work' },
+    { name: 'Machinery', path: '/machinery' },
+    { name: 'Designs', path: '/design-library' },
+    { name: 'Contact', path: '/#contact' }
+  ];
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
     <>
-      {links.map((link, i) => (
-        <motion.a
-          key={link}
-          href={`#${link.toLowerCase().replace(' ', '-')}`}
-          className={`font-body text-sm font-medium transition-colors relative ${
-            mobile 
-              ? "text-foreground/80 hover:text-foreground text-lg py-4 border-b border-border w-full" 
-              : "text-white/80 hover:text-white"
-          }`}
-          initial={mobile ? { opacity: 0, x: -10 } : { opacity: 0, y: -10 }}
-          animate={mobile ? { opacity: 1, x: 0 } : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 * i }}
-          onClick={() => mobile && setOpen(false)}
-        >
-          {link}
-        </motion.a>
-      ))}
-      <motion.a
-        href="#contact"
-        className={`bg-primary text-primary-foreground px-5 py-2 rounded-sm font-body text-sm font-medium hover:opacity-90 transition-opacity ${
-          mobile ? "mt-6 text-center text-lg py-3" : ""
-        }`}
+      {links.map((link, i) => {
+        const isHash = link.path.startsWith('/#');
+        const isActive = location.pathname === link.path && !isHash;
+        
+        return (
+          <motion.div
+            key={link.name}
+            initial={mobile ? { opacity: 0, x: -10 } : { opacity: 0, y: -10 }}
+            animate={mobile ? { opacity: 1, x: 0 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 * i }}
+            className={mobile ? "w-full" : ""}
+          >
+            <Link
+              to={link.path}
+              className={`font-body text-sm font-medium transition-all duration-300 relative block ${
+                mobile 
+                  ? "text-foreground/80 hover:text-foreground text-lg py-4 border-b border-border w-full" 
+                  : scrolled ? "text-foreground/80 hover:text-primary" : "text-white/80 hover:text-white"
+              } ${isActive ? "text-primary hover:text-primary font-boldScale" : ""}`}
+              onClick={() => mobile && setOpen(false)}
+            >
+              {link.name}
+            </Link>
+          </motion.div>
+        );
+      })}
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.5 }}
-        onClick={() => mobile && setOpen(false)}
+        className={mobile ? "mt-6" : ""}
       >
-        Get a Quote
-      </motion.a>
+        <Link
+          to="/#contact"
+          className={`bg-primary text-primary-foreground px-5 py-2 rounded-sm font-body text-sm font-medium hover:opacity-90 transition-opacity inline-block ${
+            mobile ? "w-full text-center text-lg py-3" : ""
+          }`}
+          onClick={() => mobile && setOpen(false)}
+        >
+          Get a Quote
+        </Link>
+      </motion.div>
     </>
   );
 
   return (
     <motion.nav
       className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4"
-      style={{ backgroundColor: `hsla(220, 15%, 12%, ${scrolled ? 0.95 : 0})` }}
+      animate={{ 
+        backgroundColor: scrolled ? "rgba(255, 255, 255, 0.95)" : "rgba(220, 15, 12, 0)",
+        backdropFilter: scrolled ? "blur(10px)" : "none",
+        boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.05)" : "none",
+        color: scrolled ? "#000000" : "#ffffff"
+      }}
+      transition={{ duration: 0.3 }}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <motion.div
-          className="font-display text-xl font-bold tracking-tight"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="text-white">BIKANER</span>
-          <span className="text-gradient-laser">LASER</span>
-        </motion.div>
+        <Link to="/" onClick={() => window.scrollTo(0,0)}>
+          <motion.div
+            className="font-display text-xl font-bold tracking-tight"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className={scrolled ? "text-foreground" : "text-white"}>BIKANER</span>
+            <span className="text-gradient-laser ml-1">LASER</span>
+          </motion.div>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
@@ -78,7 +107,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className="text-white p-2" aria-label="Toggle Menu">
+              <button className={`${scrolled ? "text-foreground" : "text-white"} p-2`} aria-label="Toggle Menu">
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
