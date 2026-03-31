@@ -1,57 +1,29 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import machine1 from '@/assets/machine-1.jpg';
 import machineEngraver from '@/assets/machine-engraver.jpg';
 import machineRouter from '@/assets/machine-router.jpg';
 import machine3d from '@/assets/machine-3dprinter.jpg';
 
-const machines = [
-  {
-    image: machine1,
-    name: 'CNC Laser Machine',
-    subtitle: 'Fiber Laser Cutting System',
-    specs: [
-      { label: 'Power', value: '6000W' },
-      { label: 'Cutting Area', value: '3000 × 1500mm' },
-      { label: 'Speed', value: '120m/min' },
-      { label: 'Accuracy', value: '±0.01mm' },
-    ],
-  },
-  {
-    image: machineEngraver,
-    name: 'Laser Engraving Machines',
-    subtitle: 'High-Precision Engraving System',
-    specs: [
-      { label: 'Power', value: '100W CO₂' },
-      { label: 'Work Area', value: '1300 × 900mm' },
-      { label: 'Resolution', value: '1000 DPI' },
-      { label: 'Speed', value: '600mm/s' },
-    ],
-  },
-  {
-    image: machineRouter,
-    name: 'CNC Wood Router',
-    subtitle: 'Heavy-Duty Wood CNC System',
-    specs: [
-      { label: 'Spindle', value: '9KW HSD' },
-      { label: 'Work Area', value: '2400 × 1200mm' },
-      { label: 'Speed', value: '40m/min' },
-      { label: 'Accuracy', value: '±0.05mm' },
-    ],
-  },
-  {
-    image: machine3d,
-    name: '3D Printer (Military Grade)',
-    subtitle: 'Industrial Metal 3D Printing',
-    specs: [
-      { label: 'Technology', value: 'SLM / FDM' },
-      { label: 'Build Volume', value: '500 × 500 × 500mm' },
-      { label: 'Layer Resolution', value: '20 microns' },
-      { label: 'Materials', value: 'Ti / SS / Inconel' },
-    ],
-  },
-];
+interface MachineSpec {
+  label: string;
+  value: string;
+}
+
+interface MachineData {
+  image: string;
+  name: string;
+  subtitle: string;
+  specs: MachineSpec[];
+  features: string[];
+  techDetails: {
+    description: string;
+    items: MachineSpec[];
+  };
+}
+
+
 
 const MachinerySection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,6 +33,101 @@ const MachinerySection = () => {
   });
   const bgY = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
+  const [machines, setMachines] = useState<MachineData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMachines = async () => {
+      try {
+        const siteUrl = import.meta.env.VITE_WC_URL;
+        const key = import.meta.env.VITE_WC_CONSUMER_KEY;
+        const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
+
+        // Fetch products in 'machinery' category
+        const res = await fetch(
+          `${siteUrl}/wp-json/wc/v3/products?category=16&consumer_key=${key}&consumer_secret=${secret}&_embed`,
+          { cache: 'no-store' }
+        );
+        console.log("responsemain", res);
+        if (res.ok) {
+          const data = await res.json();
+          console.log("response2", data);
+          const mappedMachines = data.map((product: any) => {
+            // Helper to get meta values by key
+            const getMeta = (key: string) => product.meta_data?.find((m: any) => m.key === key)?.value;
+            
+            // Helpful log to see the actual content of your fields
+            console.log(`Values for ${product.name}:`, {
+              sub: getMeta('machine_subtitle'),
+              feat: getMeta('machine_features'),
+              specs: getMeta('tech_specs'),
+              overview: getMeta('Overview') || getMeta('overview'), // Handle case sensitivity
+              img: getMeta('machine_image')
+            });
+
+            // 1. Map Overview from ACF "overview" field (Label: Value format)
+            const acfOverview = getMeta('Overview') || getMeta('overview');
+            const specs = acfOverview
+              ? String(acfOverview).split(/\r?\n/).map((line: string) => {
+                const [label, ...valueParts] = line.split(':');
+                return {
+                  label: label?.trim() || "",
+                  value: valueParts.join(':')?.trim() || ""
+                };
+              }).filter((item: any) => item.label !== "")
+              : (product.attributes?.map((attr: any) => ({
+                  label: attr.name,
+                  value: attr.options[0]
+                })) || []);
+
+            // 2. Parse Features from ACF (stored in meta_data)
+            const acfFeatures = getMeta('machine_features');
+            const features = acfFeatures
+              ? String(acfFeatures).split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean)
+              : [];
+
+            // 3. Parse Tech Specs from ACF (stored in meta_data)
+            const acfTechSpecs = getMeta('tech_specs');
+            const techItems = acfTechSpecs
+              ? String(acfTechSpecs).split(/\r?\n/).map((line: string) => {
+                const [label, ...valueParts] = line.split(':');
+                return {
+                  label: label?.trim() || "",
+                  value: valueParts.join(':')?.trim() || ""
+                };
+              }).filter((item: any) => item.label !== "")
+              : [];
+
+            const machineImg = getMeta('machine_image');
+            // If machineImg is a number (ID), it's not a valid URL.
+            const validMachineImg = machineImg && isNaN(Number(machineImg)) ? machineImg : null;
+
+            return {
+              // Priority: acf_image URL -> standard WC featured image
+              image: validMachineImg || product.images?.[0]?.src || '',
+              name: getMeta('machine_name') || product.name,
+              subtitle: getMeta('machine_subtitle') || '',
+              specs: specs,
+              features: features,
+              techDetails: {
+                description: getMeta('tech_description') || product.short_description?.replace(/<[^>]*>?/gm, '') || "",
+                items: techItems
+              }
+            };
+          });
+
+          setMachines(mappedMachines);
+        }
+      } catch (error) {
+        console.error("Error fetching machines:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMachines();
+  }, []);
+
   return (
     <section id="machinery" ref={containerRef} className="relative py-16 md:py-24 bg-gradient-section overflow-hidden">
       <motion.div
@@ -69,115 +136,161 @@ const MachinerySection = () => {
       />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <motion.div
-          className="mb-12 md:mb-16 text-left"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <motion.span
-            className="font-body text-sm tracking-[0.3em] uppercase text-primary font-medium"
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            02 — Machinery
-          </motion.span>
-          <motion.h2
-            className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mt-4 leading-[1.1]"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Built for
-            <br />
-            <span className="text-gradient-laser">raw power</span>
-          </motion.h2>
-        </motion.div>
-
         <div className="space-y-12 md:space-y-16">
-          {machines.map((machine, i) => (
-            <MachineCard key={machine.name} machine={machine} index={i} />
-          ))}
+          {loading ? (
+            <div className="py-20 text-center uppercase tracking-[0.3em] text-xs font-bold text-muted-foreground animate-pulse">
+              Syncing Machinery Data...
+            </div>
+          ) : machines.length > 0 ? (
+            machines.map((machine, i) => (
+              <MachineCard key={machine.name} machine={machine} index={i} />
+            ))
+          ) : (
+            <div className="py-20 text-center uppercase tracking-[0.2em] text-xs font-bold text-muted-foreground">
+              No machines found in the gallery.
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 };
 
-const MachineCard = ({ machine, index }: { machine: typeof machines[0]; index: number }) => {
-  const [hoveredSpec, setHoveredSpec] = useState<number | null>(null);
+const MachineAccordion = ({ machine }: { machine: MachineData }) => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const items = [
+    {
+      title: 'Overview',
+      content: (
+        <div className="space-y-6 py-6 px-6 bg-zinc-50/80 border border-border/40 rounded-2xl mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+            {machine.specs.map((spec) => (
+              <div key={spec.label} className="flex justify-between items-center border-b border-border/40 pb-2">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-medium">{spec.label}</span>
+                <span className="font-display font-bold text-sm tracking-tight">{spec.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Features',
+      content: (
+        <div className="py-6 px-6 bg-zinc-50/80 border border-border/40 rounded-2xl mb-6">
+          <ul className="space-y-3">
+            {machine.features.map((feature, idx) => (
+              <li key={idx} className="flex items-start gap-3 group">
+                <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/60 shrink-0 group-hover:scale-125 transition-transform" />
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    },
+    {
+      title: 'Technical Specification',
+      content: (
+        <div className="py-6 px-6 bg-zinc-50/80 border border-border/40 rounded-2xl mb-6">
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground leading-relaxed italic border-l-2 border-primary/30 pl-4">
+              "{machine.techDetails.description}"
+            </p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
+                {machine.techDetails.items.filter((_, i) => i < 2).map((item) => (
+                  <div key={item.label}>
+                    <h5 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">{item.label}</h5>
+                    <p className="text-xs font-semibold">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-4">
+                {machine.techDetails.items.filter((_, i) => i >= 2).map((item) => (
+                  <div key={item.label}>
+                    <h5 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">{item.label}</h5>
+                    <p className="text-xs font-semibold">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="mt-8">
+      {items.map((item, idx) => (
+        <div key={item.title} className="border-t border-border/80 first:border-t-0">
+          <button
+            onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+            className="w-full py-6 flex justify-between items-center group transition-all"
+          >
+            <span className={`font-display text-sm font-bold tracking-[0.2em] uppercase transition-all ${openIndex === idx ? 'text-primary' : 'text-foreground/70 group-hover:text-primary'}`}>
+              {item.title}
+            </span>
+            <motion.div
+              animate={{ rotate: openIndex === idx ? 180 : 0, color: openIndex === idx ? 'hsl(var(--primary))' : 'currentColor' }}
+              transition={{ duration: 0.3 }}
+              className="text-muted-foreground"
+            >
+              <ChevronDown size={18} />
+            </motion.div>
+          </button>
+          <AnimatePresence initial={false}>
+            {openIndex === idx && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}
+                className="overflow-hidden"
+              >
+                {item.content}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
+      <div className="border-t border-border/80" />
+    </div>
+  );
+};
+
+const MachineCard = ({ machine, index }: { machine: MachineData; index: number }) => {
   const isEven = index % 2 === 0;
 
   return (
     <motion.div
-      className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 md:gap-16 items-center`}
+      className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 md:gap-16 items-start`}
       initial={{ opacity: 0, x: isEven ? -60 : 60 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="flex-1 w-full">
-        <div className="relative overflow-hidden rounded-sm shadow-elevated">
+      <div className="flex-1 w-full self-start">
+        <div className="relative overflow-hidden rounded-sm shadow-elevated group">
           <motion.img
             src={machine.image}
             alt={machine.name}
-            className="w-full aspect-[4/3] object-cover"
+            className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105"
             loading="lazy"
             width={800}
             height={600}
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.6 }}
           />
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-laser-glow" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-laser-glow scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
         </div>
       </div>
 
       <div className="flex-1 w-full">
-        <h3 className="font-display text-3xl md:text-4xl font-bold">{machine.name}</h3>
-        <p className="font-body text-muted-foreground mt-2 text-sm tracking-wide">{machine.subtitle}</p>
+        <h3 className="font-display text-3xl md:text-4xl font-bold tracking-tight">{machine.name}</h3>
+        <p className="font-body text-primary font-medium mt-2 text-sm tracking-wider uppercase opacity-80">{machine.subtitle}</p>
 
-        <div className="mt-8 space-y-0 border-t border-border">
-          {machine.specs.map((spec, si) => (
-            <motion.div
-              key={spec.label}
-              className="flex justify-between items-center py-4 border-b border-border cursor-default"
-              onHoverStart={() => setHoveredSpec(si)}
-              onHoverEnd={() => setHoveredSpec(null)}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: si * 0.1 + 0.3 }}
-            >
-              <span className="font-body text-sm text-muted-foreground">{spec.label}</span>
-              <motion.span
-                className="font-display text-lg font-bold"
-                animate={{
-                  color: hoveredSpec === si ? 'hsl(30, 95%, 52%)' : 'hsl(220, 15%, 12%)',
-                  scale: hoveredSpec === si ? 1.05 : 1,
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                {spec.value}
-              </motion.span>
-            </motion.div>
-          ))}
-        </div>
-
-        {machine.name.includes('Military') && (
-          <motion.button
-            className="mt-10 bg-primary text-white px-8 py-3 rounded-sm font-display text-xs font-bold tracking-[0.2em] uppercase flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/20 group/btn"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8 }}
-          >
-            View Technical Specs
-            <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-          </motion.button>
-        )}
+        <MachineAccordion machine={machine} />
       </div>
     </motion.div>
   );
