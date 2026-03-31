@@ -8,6 +8,18 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      '/wp-json': {
+        target: 'https://admin.sacredsouls.in',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/wp-content': {
+        target: 'https://admin.sacredsouls.in',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
     hmr: {
       overlay: false,
     },
