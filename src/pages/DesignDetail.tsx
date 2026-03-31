@@ -46,7 +46,7 @@ const DesignDetail = () => {
   const navigate = useNavigate();
   const design = designs.find(d => d.id === id);
 
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfList, setPdfList] = useState<{ name: string; url: string }[]>([]);
   const [isPdfLoading, setIsPdfLoading] = useState(true);
 
   useEffect(() => {
@@ -74,32 +74,43 @@ const DesignDetail = () => {
           console.log(`Found ${data.length} products matching "${design.title}"`);
           
           if (data && data.length > 0) {
-            // Find the first product that truly matches or just use the first result
             const product = data[0]; 
-            const pdfMeta = product.meta_data?.find((m: any) => m.key === 'product_pdf_file');
             
-            if (pdfMeta && pdfMeta.value) {
-              const attachmentId = pdfMeta.value;
-              console.log(`Found PDF attachment ID: ${attachmentId}`);
-              
-              const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${attachmentId}`, { cache: 'no-store' });
-              if (mediaRes.ok) {
-                const mediaData = await mediaRes.json();
-                if (mediaData.source_url) {
-                  // Rewrite URL to use local proxy to avoid CORS on download
-                  const proxiedUrl = mediaData.source_url.replace('https://admin.sacredsouls.in', siteUrl);
-                  console.log(`PDF URL (proxied): ${proxiedUrl}`);
-                  setPdfUrl(proxiedUrl);
+            // Find all metadata starting with product_pdf_file
+            const pdfMetaItems = product.meta_data?.filter((m: any) => 
+              m.key.startsWith('product_pdf_file') && m.value
+            );
+            
+            if (pdfMetaItems && pdfMetaItems.length > 0) {
+              const fetchedPdfs = await Promise.all(pdfMetaItems.map(async (meta: any) => {
+                const attachmentId = meta.value;
+                const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${attachmentId}`, { cache: 'no-store' });
+                
+                if (mediaRes.ok) {
+                  const mediaData = await mediaRes.json();
+                  if (mediaData.source_url) {
+                    const proxiedUrl = mediaData.source_url.replace('https://admin.sacredsouls.in', siteUrl);
+                    
+                    // Generate a nice name from the key (e.g., product_pdf_file_2 -> FILE 2)
+                    let displayName = "DOCUMENT";
+                    if (meta.key === 'product_pdf_file') {
+                      displayName = "MAIN SPECIFICATION";
+                    } else {
+                      const suffix = meta.key.split('product_pdf_file_')[1];
+                      displayName = suffix ? `DOC ${suffix.toUpperCase()}` : "DOCUMENT";
+                    }
+
+                    return { name: displayName, url: proxiedUrl };
+                  }
                 }
-              }
+                return null;
+              }));
+
+              setPdfList(fetchedPdfs.filter(p => p !== null) as { name: string; url: string }[]);
             } else {
-              console.warn("Product found but no 'product_pdf_file' metadata exists.");
+              console.warn("Product found but no PDF metadata exists.");
             }
-          } else {
-            console.warn(`No products found in WooCommerce for search: ${design.title}`);
           }
-        } else {
-          console.error("WooCommerce API returned an error:", res.status, res.statusText);
         }
       } catch (error) {
         console.error("Error fetching product data:", error);
@@ -122,30 +133,23 @@ const DesignDetail = () => {
     );
   }
 
-  const handleDownload = async () => {
-    if (!pdfUrl) {
-      alert("There is no PDF available in the database for this product.");
-      return;
-    }
-
+  const handleDownload = async (url: string, fileName: string) => {
     try {
-      console.log("Starting PDF download handler...");
-      const response = await fetch(pdfUrl);
-      if (!response.ok) throw new Error("Failed to fetch PDF file via proxy");
+      console.log(`Starting download for ${fileName}...`);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch file");
       
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${design.title.replace(/\s+/g, '_')}_spec.pdf`);
+      link.href = blobUrl;
+      link.setAttribute('download', `${design.title.replace(/\s+/g, '_')}_${fileName.replace(/\s+/g, '_')}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url);
-      console.log("Download triggered successfully.");
+      window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error("Blob download failed, falling back to new window:", error);
-      window.open(pdfUrl, '_blank');
+      window.open(url, '_blank');
     }
   };
 
@@ -206,19 +210,34 @@ const DesignDetail = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                onClick={handleDownload}
-                disabled={isPdfLoading}
-                className="py-7 px-10 rounded-2xl flex items-center gap-3 text-lg font-bold shadow-xl shadow-primary/20"
-              >
-                <FileDown className="h-5 w-5" />
-                {isPdfLoading ? "Checking File..." : "Download PDF"}
-              </Button>
+            <div className="space-y-4">
+              {isPdfLoading ? (
+                <Button disabled className="py-7 px-10 rounded-2xl flex items-center gap-3 text-lg font-bold shadow-xl">
+                  Checking Files...
+                </Button>
+              ) : pdfList.length > 0 ? (
+                <div className="flex flex-col gap-4">
+                  {pdfList.map((pdf, index) => (
+                    <Button 
+                      key={index}
+                      onClick={() => handleDownload(pdf.url, pdf.name)}
+                      className="py-7 px-10 rounded-2xl flex items-center gap-3 text-lg font-bold shadow-xl shadow-primary/20 w-fit"
+                    >
+                      <FileDown className="h-5 w-5" />
+                      Download {pdf.name}
+                    </Button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-600 font-medium text-sm">
+                  No technical documents available for this design yet.
+                </div>
+              )}
+              
               <Button 
                 variant="outline"
                 onClick={() => navigate('/#contact')}
-                className="py-7 px-10 rounded-2xl text-lg font-bold"
+                className="py-7 px-10 rounded-2xl text-lg font-bold w-fit mt-4"
               >
                 Inquire about this design
               </Button>
