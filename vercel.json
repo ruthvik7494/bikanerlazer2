@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/wp-json/:path*",
+      "destination": "https://admin.sacredsouls.in/wp-json/:path*"
+    },
+    {
+      "source": "/wp-content/:path*",
+      "destination": "https://admin.sacredsouls.in/wp-content/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
