@@ -14,6 +14,11 @@ const Navbar = () => {
   const { scrollY } = useScroll();
   const location = useLocation();
 
+  // Force the scrolled (solid) look on pages that don't have a dark hero section
+  // Like the Design Detail page (any path starting with /design/ but not the library itself)
+  const isTransparentPage = ['/', '/job-work', '/machinery', '/design-library'].includes(location.pathname);
+  const isSolid = scrolled || !isTransparentPage;
+
   useEffect(() => {
     const unsub = scrollY.on('change', (v) => setScrolled(v > 50));
     return unsub;
@@ -46,7 +51,7 @@ const Navbar = () => {
               className={`font-body text-sm font-medium transition-all duration-300 relative block ${
                 mobile 
                   ? "text-foreground/80 hover:text-foreground text-lg py-4 border-b border-border w-full" 
-                  : scrolled ? "text-foreground/80 hover:text-primary" : "text-white/80 hover:text-white"
+                  : isSolid ? "text-foreground/80 hover:text-primary" : "text-white/80 hover:text-white"
               } ${isActive ? "text-primary hover:text-primary font-boldScale" : ""}`}
               onClick={() => mobile && setOpen(false)}
             >
@@ -78,10 +83,10 @@ const Navbar = () => {
     <motion.nav
       className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4"
       animate={{ 
-        backgroundColor: scrolled ? "rgba(255, 255, 255, 0.95)" : "rgba(220, 15, 12, 0)",
-        backdropFilter: scrolled ? "blur(10px)" : "none",
-        boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.05)" : "none",
-        color: scrolled ? "#000000" : "#ffffff"
+        backgroundColor: isSolid ? "rgba(255, 255, 255, 0.98)" : "rgba(220, 15, 12, 0)",
+        backdropFilter: isSolid ? "blur(10px)" : "none",
+        boxShadow: isSolid ? "0 4px 20px rgba(0,0,0,0.08)" : "none",
+        color: isSolid ? "#000000" : "#ffffff"
       }}
       transition={{ duration: 0.3 }}
     >
@@ -93,7 +98,7 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className={scrolled ? "text-foreground" : "text-white"}>BIKANER</span>
+            <span className={isSolid ? "text-foreground" : "text-white"}>BIKANER</span>
             <span className="text-gradient-laser ml-1">LASER</span>
           </motion.div>
         </Link>
@@ -107,7 +112,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className={`${scrolled ? "text-foreground" : "text-white"} p-2`} aria-label="Toggle Menu">
+              <button className={`${isSolid ? "text-foreground" : "text-white"} p-2`} aria-label="Toggle Menu">
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
