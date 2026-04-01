@@ -5,137 +5,91 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { FileDown, ArrowLeft, ZoomIn } from 'lucide-react';
-import designTree from '@/assets/design-tree.png';
-import designMandala from '@/assets/design-mandala.png';
-import designWaves from '@/assets/design-waves.png';
 
-export const designs = [
-  { 
-    id: 'tree-of-life',
-    title: 'Tree of Life', 
-    category: 'Nature', 
-    image: designTree, 
-    desc: 'Intricate branches and roots representing unity and growth.',
-    technical: 'Best for: 1.5mm - 3mm Stainless Steel or Acrylic.',
-    size: 'Standard size: 600mm x 600mm'
-  },
-  { 
-    id: 'golden-mandala',
-    title: 'Golden Mandala', 
-    category: 'Geometric', 
-    image: designMandala, 
-    desc: 'Complex geometric patterns perfect for wall decor or lighting fixtures.',
-    technical: 'Best for: 1mm - 2mm Brass or Powder-coated mild steel.',
-    size: 'Standard size: 800mm x 800mm'
-  },
-  { 
-    id: 'modern-waves',
-    title: 'Modern Waves', 
-    category: 'Abstract', 
-    image: designWaves, 
-    desc: 'Abstract wave patterns suitable for privacy screens and room dividers.',
-    technical: 'Best for: 2.5mm+ Aluminum or Wood.',
-    size: 'Standard size: 1200mm x 2400mm'
-  },
-];
+interface PdfFile {
+  name: string;
+  url: string;
+}
 
-import { jsPDF } from 'jspdf';
+interface DesignData {
+  id: number;
+  title: string;
+  category: string;
+  image: string;
+  desc: string;
+  technical: string;
+  size: string;
+  pdfs: PdfFile[];
+}
 
 const DesignDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const design = designs.find(d => d.id === id);
-
-  const [pdfList, setPdfList] = useState<{ name: string; url: string }[]>([]);
-  const [isPdfLoading, setIsPdfLoading] = useState(true);
+  const [design, setDesign] = useState<DesignData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!design) return;
+    const fetchDesignData = async () => {
+      if (!id) return;
       try {
         const siteUrl = import.meta.env.VITE_WC_URL;
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-        if (!siteUrl || !key || !secret) {
-          console.error("Missing WC credentials in .env");
-          setIsPdfLoading(false);
-          return;
-        }
-
-        console.log(`Searching for product: ${design.title}`);
+        // 1. Fetch the specific product by ID
         const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products?search=${encodeURIComponent(design.title)}&consumer_key=${key}&consumer_secret=${secret}`,
+          `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
           { cache: 'no-store' }
         );
-        
+
         if (res.ok) {
-          const data = await res.json();
-          console.log(`Found ${data.length} products matching "${design.title}"`);
+          const product = await res.json();
+          const getMeta = (key: string) => product.meta_data?.find((m: any) => m.key === key)?.value;
+
+          // 1. Filter out parent category (ID 22) to get the specific one (Nature, Abstract, etc.)
+          const designsParentId = 22;
+          const subCategory = product.categories?.find((c: any) => c.id !== designsParentId)?.name || 'Pattern';
+
+          // 2. Fetch PDF Media URL
+          const pdfAttachmentId = getMeta('product_pdf_file');
+          const pdfs: PdfFile[] = [];
           
-          if (data && data.length > 0) {
-            const product = data[0]; 
-            
-            // Find all metadata starting with product_pdf_file
-            const pdfMetaItems = product.meta_data?.filter((m: any) => 
-              m.key.startsWith('product_pdf_file') && m.value
-            );
-            
-            if (pdfMetaItems && pdfMetaItems.length > 0) {
-              const fetchedPdfs = await Promise.all(pdfMetaItems.map(async (meta: any) => {
-                const attachmentId = meta.value;
-                const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${attachmentId}`, { cache: 'no-store' });
-                
-                if (mediaRes.ok) {
-                  const mediaData = await mediaRes.json();
-                  if (mediaData.source_url) {
-                    const proxiedUrl = mediaData.source_url.replace('https://admin.sacredsouls.in', siteUrl);
-                    
-                    // Generate a nice name from the key (e.g., product_pdf_file_2 -> FILE 2)
-                    let displayName = "DOCUMENT";
-                    if (meta.key === 'product_pdf_file') {
-                      displayName = "MAIN SPECIFICATION";
-                    } else {
-                      const suffix = meta.key.split('product_pdf_file_')[1];
-                      displayName = suffix ? `DOC ${suffix.toUpperCase()}` : "DOCUMENT";
-                    }
-
-                    return { name: displayName, url: proxiedUrl };
-                  }
+          if (pdfAttachmentId) {
+            try {
+              const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
+              if (mediaRes.ok) {
+                const mediaData = await mediaRes.json();
+                if (mediaData.source_url) {
+                  const proxiedUrl = mediaData.source_url.replace('https://admin.sacredsouls.in', siteUrl);
+                  pdfs.push({ name: "PDF Specification", url: proxiedUrl });
                 }
-                return null;
-              }));
-
-              setPdfList(fetchedPdfs.filter(p => p !== null) as { name: string; url: string }[]);
-            } else {
-              console.warn("Product found but no PDF metadata exists.");
-            }
+              }
+            } catch (err) { /* silent */ }
           }
+
+          setDesign({
+            id: product.id,
+            title: product.name,
+            category: subCategory,
+            image: product.images?.[0]?.src || '',
+            desc: product.description?.replace(/<[^>]*>?/gm, '') || product.short_description?.replace(/<[^>]*>?/gm, '') || '',
+            technical: getMeta('design_technical') || 'Standard technical specifications apply.',
+            size: getMeta('design_size') || 'Available in custom sizes.',
+            pdfs: pdfs
+          });
         }
       } catch (error) {
-        console.error("Error fetching product data:", error);
+        console.error("Error fetching design detail:", error);
       } finally {
-        setIsPdfLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchProduct();
-  }, [design]);
-
-  if (!design) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Design Not Found</h1>
-          <Button onClick={() => navigate('/design-library')}>Back to Library</Button>
-        </div>
-      </div>
-    );
-  }
+    fetchDesignData();
+  }, [id]);
 
   const handleDownload = async (url: string, fileName: string) => {
     try {
-      console.log(`Starting download for ${fileName}...`);
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch file");
       
@@ -143,7 +97,7 @@ const DesignDetail = () => {
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = blobUrl;
-      link.setAttribute('download', `${design.title.replace(/\s+/g, '_')}_${fileName.replace(/\s+/g, '_')}.pdf`);
+      link.setAttribute('download', `${design?.title.replace(/\s+/g, '_')}_${fileName.replace(/\s+/g, '_')}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -152,6 +106,26 @@ const DesignDetail = () => {
       window.open(url, '_blank');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-muted-foreground font-body text-sm tracking-widest uppercase">Fetching Design Details...</p>
+      </div>
+    );
+  }
+
+  if (!design) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4 font-display">Design Not Found</h1>
+          <Button onClick={() => navigate('/design-library')} className="rounded-xl">Back to Library</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -175,11 +149,13 @@ const DesignDetail = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
           >
-            <img 
-              src={design.image} 
-              alt={design.title} 
-              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-            />
+            {design.image && (
+              <img 
+                src={design.image} 
+                alt={design.title} 
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+              />
+            )}
             <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <ZoomIn className="text-white h-12 w-12" />
             </div>
@@ -192,7 +168,7 @@ const DesignDetail = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <span className="font-body text-sm tracking-[0.3em] uppercase text-primary font-medium block mb-4">
-              {design.category} Design
+              {design.category} Template
             </span>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               {design.title}
@@ -205,19 +181,17 @@ const DesignDetail = () => {
             <div className="space-y-6 mb-12">
               <div className="p-6 rounded-2xl bg-muted/30 border border-border">
                 <h3 className="font-display font-bold text-lg mb-2">Technical Specifications</h3>
-                <p className="font-body text-sm text-foreground/80">{design.technical}</p>
-                <p className="font-body text-sm text-foreground/80 mt-1">{design.size}</p>
+                <div className="font-body text-sm text-foreground/80 leading-relaxed">
+                  <p className="mb-1">{design.technical}</p>
+                  <p className="font-medium">Standard size: {design.size}</p>
+                </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              {isPdfLoading ? (
-                <Button disabled className="py-7 px-10 rounded-2xl flex items-center gap-3 text-lg font-bold shadow-xl">
-                  Checking Files...
-                </Button>
-              ) : pdfList.length > 0 ? (
+              {design.pdfs.length > 0 ? (
                 <div className="flex flex-col gap-4">
-                  {pdfList.map((pdf, index) => (
+                  {design.pdfs.map((pdf, index) => (
                     <Button 
                       key={index}
                       onClick={() => handleDownload(pdf.url, pdf.name)}
