@@ -1,9 +1,9 @@
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
-import JobWorkSection from '@/components/JobWorkSection';
-import MachinerySection from '@/components/MachinerySection';
-import DesignLibrary from '@/components/DesignLibrary';
+// import JobWorkSection from '@/components/JobWorkSection';
+// import MachinerySection from '@/components/MachinerySection';
+// import DesignLibrary from '@/components/DesignLibrary';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
@@ -22,7 +22,7 @@ const Index = () => {
     <div className="bg-background">
       <Navbar />
       <HeroSection />
-      
+
       {/* CATEGORIES */}
       <section className="py-20 bg-background/50">
         <div className="container mx-auto px-6 lg:px-12">
@@ -53,9 +53,9 @@ const Index = () => {
       </section>
 
       <AboutSection />
-      <JobWorkSection />
+      {/* <JobWorkSection />
       <MachinerySection />
-      <DesignLibrary />
+      <DesignLibrary /> */}
       <ContactSection />
       <Footer />
     </div>

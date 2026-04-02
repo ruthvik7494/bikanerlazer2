@@ -66,15 +66,18 @@ const Navbar = () => {
         transition={{ duration: 0.4, delay: 0.5 }}
         className={mobile ? "mt-6" : ""}
       >
-        <Link
-          to="/#contact"
+        <button
+          onClick={() => {
+            const message = `Hello Bikaner Laser, I would like to get a quote.`;
+            window.open(`https://wa.me/919166562244?text=${encodeURIComponent(message)}`, '_blank');
+            if (mobile) setOpen(false);
+          }}
           className={`bg-primary text-primary-foreground px-5 py-2 rounded-sm font-body text-sm font-medium hover:opacity-90 transition-opacity inline-block ${
             mobile ? "w-full text-center text-lg py-3" : ""
           }`}
-          onClick={() => mobile && setOpen(false)}
         >
           Get a Quote
-        </Link>
+        </button>
       </motion.div>
     </>
   );

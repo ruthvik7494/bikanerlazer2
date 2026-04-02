@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar';
-import ContactSection from '@/components/ContactSection';
+// import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -33,7 +33,7 @@ const DesignLibraryPage = () => {
           `${siteUrl}/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
           { cache: 'no-store' }
         );
-        
+
         if (res.ok) {
           const data = await res.json();
           const mapped = data.map((p: any) => ({
@@ -63,9 +63,9 @@ const DesignLibraryPage = () => {
       <div className="relative min-h-[450px] flex items-center overflow-hidden text-left">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src={heroDesigns} 
-            alt="Design Library Hero" 
+          <img
+            src={heroDesigns}
+            alt="Design Library Hero"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
@@ -144,7 +144,7 @@ const DesignLibraryPage = () => {
               ))}
             </div>
           )}
-          
+
           {!loading && designs.length === 0 && (
             <div className="text-center py-20 grayscale opacity-50">
               <p className="font-body text-sm uppercase tracking-widest">No designs found in the library.</p>
@@ -153,7 +153,7 @@ const DesignLibraryPage = () => {
         </div>
       </section>
 
-      <ContactSection />
+      {/* <ContactSection /> */}
       <Footer />
     </div>
   );

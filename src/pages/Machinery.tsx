@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar';
 import MachinerySection from '@/components/MachinerySection';
-import ContactSection from '@/components/ContactSection';
+// import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import heroMachinery from '@/assets/hero-machinery.png';
@@ -9,14 +9,14 @@ const Machinery = () => {
   return (
     <div className="bg-background min-h-screen">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="relative min-h-[450px] flex items-center overflow-hidden text-left">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src={heroMachinery} 
-            alt="Machinery Hero" 
+          <img
+            src={heroMachinery}
+            alt="Machinery Hero"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
@@ -43,7 +43,7 @@ const Machinery = () => {
         </div>
       </div>
       <MachinerySection />
-      <ContactSection />
+      {/* <ContactSection /> */}
       <Footer />
     </div>
   );

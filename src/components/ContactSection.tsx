@@ -13,7 +13,21 @@ const ContactSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+
+    if (!formState.name || !formState.email || !formState.phone || !formState.message) {
+      alert("Please fill in all the required fields.");
+      return;
+    }
+
+    const message = `Hello Bikaner Laser, I have an inquiry:
+*Name:* ${formState.name}
+*Email:* ${formState.email}
+*Phone:* ${formState.phone}
+*Service:* ${formState.service || 'General Inquiry'}
+*Details:* ${formState.message}`;
+
+    const whatsappUrl = `https://wa.me/919166562244?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -42,7 +56,7 @@ const ContactSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                04 — Get In Touch
+                Get In Touch
               </motion.span>
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mt-4 leading-[1.1]">
                 Let's build
@@ -50,7 +64,7 @@ const ContactSection = () => {
                 the <span className="text-gradient-laser">future</span>
               </h2>
               <p className="font-body text-muted-foreground mt-8 text-base md:text-lg leading-relaxed max-w-md">
-                Share your vision and we'll turn it into precision-cut reality. 
+                Share your vision and we'll turn it into precision-cut reality.
                 Every project starts with a conversation about excellence.
               </p>
 
@@ -58,11 +72,11 @@ const ContactSection = () => {
               <div className="mt-12 space-y-6">
                 <div>
                   <p className="font-body text-[10px] tracking-widest uppercase text-white/40 mb-1">Office Address</p>
-                  <p className="font-body text-foreground">Industrial Area, Phase II, Bikaner, Rajasthan</p>
+                  <p className="font-body text-foreground">Magan Bissa Bhawan, Chowkhunti, Bikaner, Rajasthan</p>
                 </div>
                 <div>
                   <p className="font-body text-[10px] tracking-widest uppercase text-white/40 mb-1">Direct Line</p>
-                  <p className="font-body text-foreground text-xl font-bold">+91 94141 12345</p>
+                  <p className="font-body text-foreground text-xl font-bold">+91 91665 62244</p>
                 </div>
               </div>
             </motion.div>
@@ -85,6 +99,7 @@ const ContactSection = () => {
                   </label>
                   <input
                     type="text"
+                    required
                     value={formState.name}
                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                     className="w-full bg-transparent border-b border-border py-3 font-body text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -97,6 +112,7 @@ const ContactSection = () => {
                   </label>
                   <input
                     type="email"
+                    required
                     value={formState.email}
                     onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                     className="w-full bg-transparent border-b border-border py-3 font-body text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -109,6 +125,7 @@ const ContactSection = () => {
                   </label>
                   <input
                     type="tel"
+                    required
                     value={formState.phone}
                     onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
                     className="w-full bg-transparent border-b border-border py-3 font-body text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -125,10 +142,12 @@ const ContactSection = () => {
                     className="w-full bg-transparent border-b border-border py-3 font-body text-foreground focus:outline-none focus:border-primary transition-colors appearance-none"
                   >
                     <option value="">Select a service</option>
-                    <option value="laser">Laser Cutting</option>
-                    <option value="cnc">CNC Machining</option>
-                    <option value="custom">Custom Design</option>
-                    <option value="bulk">Bulk Order</option>
+                    <option value="Precision Laser Cutting">Precision Laser Cutting</option>
+                    <option value="Metal Fabrication">Metal Fabrication</option>
+                    <option value="Fiber Laser Engraving">Fiber Laser Engraving</option>
+                    <option value="Tube Cutting Solutions">Tube Cutting Solutions</option>
+                    <option value="Welding Services">Welding Services</option>
+                    <option value="Automotive & Aerospace">Automotive & Aerospace</option>
                   </select>
                 </div>
               </div>
@@ -139,6 +158,7 @@ const ContactSection = () => {
                 </label>
                 <textarea
                   value={formState.message}
+                  required
                   onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                   rows={4}
                   className="w-full bg-transparent border-b border-border py-3 font-body text-foreground focus:outline-none focus:border-primary transition-colors resize-none"
@@ -152,7 +172,7 @@ const ContactSection = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Send Inquiry
+                Send enquiry
                 <Send size={16} />
               </motion.button>
             </motion.form>
