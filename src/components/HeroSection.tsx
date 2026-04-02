@@ -42,7 +42,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            CNC Laser Cutting, Engraving, Wood Routing & 3D Printing — Since 1972. 
+            CNC Laser Cutting, Engraving, Wood Routing & 3D Printing — Since 1972.
             Precision solutions engineered for perfection.
           </motion.p>
 
@@ -54,24 +54,27 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             <a
-              href="#job-work"
+              href="/job-work"
               className="bg-[#c8102e] hover:bg-[#a00d25] text-white px-8 py-4 rounded-sm font-display text-base font-bold tracking-wider uppercase transition-all shadow-lg hover:shadow-red-900/40"
             >
               Explore Services
             </a>
-            <a
-              href="#contact"
-              className="font-display text-base font-bold text-white hover:text-primary transition-colors flex items-center gap-2 group tracking-wider uppercase border-b border-transparent hover:border-primary pb-1"
+            <button
+              onClick={() => {
+                const message = `Hello Bikaner Laser, I would like to get in touch for an inquiry.`;
+                window.open(`https://wa.me/919166562244?text=${encodeURIComponent(message)}`, '_blank');
+              }}
+              className="font-display text-base font-bold text-white hover:text-primary transition-colors flex items-center gap-2 group tracking-wider uppercase border-b border-white/20 hover:border-primary pb-1"
             >
               Get in Touch
-              <motion.span 
+              <motion.span
                 className="inline-block"
                 animate={{ x: [0, 4, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               >
                 →
               </motion.span>
-            </a>
+            </button>
           </motion.div>
         </div>
       </div>

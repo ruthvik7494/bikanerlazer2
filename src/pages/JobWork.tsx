@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar';
-import ContactSection from '@/components/ContactSection';
+// import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -182,9 +182,12 @@ const JobWork = () => {
                         <Button
                           variant="outline"
                           className="w-full rounded-xl py-6 font-display font-semibold transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:border-primary group-hover:shadow-md"
-                          onClick={() => window.location.href = '#contact'}
+                          onClick={() => {
+                            const message = `Hello Bikaner Laser, I am interested in your service: ${product.title}`;
+                            window.open(`https://wa.me/919166562244?text=${encodeURIComponent(message)}`, '_blank');
+                          }}
                         >
-                          Inquire Now
+                          Enquire Now
                         </Button>
                       </div>
                     </motion.div>
@@ -202,7 +205,7 @@ const JobWork = () => {
         </div>
       </section>
 
-      <ContactSection />
+      {/* <ContactSection /> */}
       <Footer />
     </div>
   );

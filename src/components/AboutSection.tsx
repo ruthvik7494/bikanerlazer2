@@ -61,7 +61,7 @@ const AboutSection = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center mb-24">
           {/* Left: Image Container */}
-          <motion.div 
+          <motion.div
             className="flex-1 w-full"
             initial={{ opacity: 0, x: -60 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -69,9 +69,9 @@ const AboutSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <div className="relative group overflow-hidden rounded-sm shadow-2xl">
-              <img 
-                src={aboutFacility} 
-                alt="Precision Laser Facility" 
+              <img
+                src={aboutFacility}
+                alt="Precision Laser Facility"
                 className="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -91,7 +91,7 @@ const AboutSection = () => {
               transition={{ duration: 0.8 }}
             >
               <span className="font-body text-xs md:text-sm tracking-[0.3em] uppercase text-primary font-bold">
-                01 — About BikanerLaser
+                About BikanerLaser
               </span>
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mt-6 leading-[1.1] text-foreground">
                 Pioneering
@@ -100,15 +100,15 @@ const AboutSection = () => {
                 <br />
                 <span className="text-gradient-laser">1972</span>
               </h2>
-              
+
               <div className="mt-10 space-y-6">
                 <p className="font-body text-muted-foreground text-base md:text-lg leading-relaxed">
-                  For over five decades, BikanerLaser has been at the forefront of precision manufacturing in India. 
-                  What started as a small workshop has grown into a state-of-the-art facility equipped 
+                  For over five decades, BikanerLaser has been at the forefront of precision manufacturing in India.
+                  What started as a small workshop has grown into a state-of-the-art facility equipped
                   with the latest CNC technology.
                 </p>
                 <p className="font-body text-muted-foreground text-base md:text-lg leading-relaxed">
-                  Our commitment to quality and innovation has made us the trusted partner for industries 
+                  Our commitment to quality and innovation has made us the trusted partner for industries
                   ranging from defense to high-end architecture, delivering excellence with every cut.
                 </p>
               </div>
@@ -163,14 +163,14 @@ const AboutSection = () => {
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 md:opacity-60 group-hover:opacity-100 transition-opacity" />
-                  
+
                   {/* Desktop Title Overlay */}
                   <div className="hidden md:block absolute bottom-0 left-0 p-6 w-full">
                     <h3 className="font-display text-xl font-bold text-white mb-1">{member.name}</h3>
                     <p className="font-body text-xs tracking-widest uppercase text-primary font-bold">{member.designation}</p>
                   </div>
                 </div>
-                
+
                 {/* Mobile Title (Below Image) */}
                 <div className="md:hidden p-4 bg-card border-t border-border/50">
                   <h3 className="font-display text-lg font-bold text-foreground mb-1">{member.name}</h3>

@@ -53,7 +53,7 @@ const DesignDetail = () => {
           // 2. Fetch PDF Media URL
           const pdfAttachmentId = getMeta('product_pdf_file');
           const pdfs: PdfFile[] = [];
-          
+
           if (pdfAttachmentId) {
             try {
               const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
@@ -73,8 +73,8 @@ const DesignDetail = () => {
             category: subCategory,
             image: product.images?.[0]?.src || '',
             desc: product.description?.replace(/<[^>]*>?/gm, '') || product.short_description?.replace(/<[^>]*>?/gm, '') || '',
-            technical: getMeta('design_technical') || 'Standard technical specifications apply.',
-            size: getMeta('design_size') || 'Available in custom sizes.',
+            technical: getMeta('design_technical'),
+            size: getMeta('design_size'),
             pdfs: pdfs
           });
         }
@@ -92,7 +92,7 @@ const DesignDetail = () => {
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch file");
-      
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -143,16 +143,16 @@ const DesignDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Image Display */}
-          <motion.div 
+          <motion.div
             className="rounded-3xl overflow-hidden bg-card border border-border group relative aspect-square"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
           >
             {design.image && (
-              <img 
-                src={design.image} 
-                alt={design.title} 
+              <img
+                src={design.image}
+                alt={design.title}
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />
             )}
@@ -173,32 +173,32 @@ const DesignDetail = () => {
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               {design.title}
             </h1>
-            
+
             <p className="font-body text-lg text-muted-foreground mb-8 leading-relaxed">
               {design.desc}
             </p>
 
-            <div className="space-y-6 mb-12">
+            {design.technical || design.size ? <div className="space-y-6 mb-12">
               <div className="p-6 rounded-2xl bg-muted/30 border border-border">
                 <h3 className="font-display font-bold text-lg mb-2">Technical Specifications</h3>
                 <div className="font-body text-sm text-foreground/80 leading-relaxed">
-                  <p className="mb-1">{design.technical}</p>
-                  <p className="font-medium">Standard size: {design.size}</p>
+                  {design.technical && <p className="mb-1">{design.technical}</p>}
+                  {design.size && <p className="font-medium">Standard size: {design.size}</p>}
                 </div>
               </div>
-            </div>
+            </div> : null}
 
             <div className="space-y-4">
               {design.pdfs.length > 0 ? (
                 <div className="flex flex-col gap-4">
                   {design.pdfs.map((pdf, index) => (
-                    <Button 
+                    <Button
                       key={index}
                       onClick={() => handleDownload(pdf.url, pdf.name)}
                       className="py-7 px-10 rounded-2xl flex items-center gap-3 text-lg font-bold shadow-xl shadow-primary/20 w-fit"
                     >
                       <FileDown className="h-5 w-5" />
-                      Download {pdf.name}
+                      Download PDF
                     </Button>
                   ))}
                 </div>
@@ -207,13 +207,16 @@ const DesignDetail = () => {
                   No technical documents available for this design yet.
                 </div>
               )}
-              
-              <Button 
+
+              <Button
                 variant="outline"
-                onClick={() => navigate('/#contact')}
+                onClick={() => {
+                  const message = `Hello Bikaner Laser, I am interested in this design: ${design?.title}`;
+                  window.open(`https://wa.me/919166562244?text=${encodeURIComponent(message)}`, '_blank');
+                }}
                 className="py-7 px-10 rounded-2xl text-lg font-bold w-fit mt-4"
               >
-                Inquire about this design
+                Enquire about this design
               </Button>
             </div>
           </motion.div>

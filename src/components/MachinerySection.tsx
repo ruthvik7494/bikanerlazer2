@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, MessageCircle } from 'lucide-react';
+import { Button } from './ui/button';
 import machine1 from '@/assets/machine-1.jpg';
 import machineEngraver from '@/assets/machine-engraver.jpg';
 import machineRouter from '@/assets/machine-router.jpg';
@@ -162,6 +163,7 @@ const MachineAccordion = ({ machine }: { machine: MachineData }) => {
   const items = [
     {
       title: 'Overview',
+      show: machine.specs.length > 0,
       content: (
         <div className="space-y-6 py-6 px-6 bg-zinc-50/80 border border-border/40 rounded-2xl mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
@@ -177,6 +179,7 @@ const MachineAccordion = ({ machine }: { machine: MachineData }) => {
     },
     {
       title: 'Features',
+      show: machine.features.length > 0,
       content: (
         <div className="py-6 px-6 bg-zinc-50/80 border border-border/40 rounded-2xl mb-6">
           <ul className="space-y-3">
@@ -192,35 +195,40 @@ const MachineAccordion = ({ machine }: { machine: MachineData }) => {
     },
     {
       title: 'Technical Specification',
+      show: machine.techDetails.description.trim() !== "" || machine.techDetails.items.length > 0,
       content: (
         <div className="py-6 px-6 bg-zinc-50/80 border border-border/40 rounded-2xl mb-6">
           <div className="space-y-6">
-            <p className="text-sm text-muted-foreground leading-relaxed italic border-l-2 border-primary/30 pl-4">
-              "{machine.techDetails.description}"
-            </p>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-4">
-                {machine.techDetails.items.filter((_, i) => i < 2).map((item) => (
-                  <div key={item.label}>
-                    <h5 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">{item.label}</h5>
-                    <p className="text-xs font-semibold">{item.value}</p>
-                  </div>
-                ))}
+            {machine.techDetails.description.trim() !== "" && (
+              <p className="text-sm text-muted-foreground leading-relaxed italic border-l-2 border-primary/30 pl-4">
+                "{machine.techDetails.description}"
+              </p>
+            )}
+            {machine.techDetails.items.length > 0 && (
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  {machine.techDetails.items.filter((_, i) => i < 2).map((item) => (
+                    <div key={item.label}>
+                      <h5 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">{item.label}</h5>
+                      <p className="text-xs font-semibold">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-4">
+                  {machine.techDetails.items.filter((_, i) => i >= 2).map((item) => (
+                    <div key={item.label}>
+                      <h5 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">{item.label}</h5>
+                      <p className="text-xs font-semibold">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-4">
-                {machine.techDetails.items.filter((_, i) => i >= 2).map((item) => (
-                  <div key={item.label}>
-                    <h5 className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">{item.label}</h5>
-                    <p className="text-xs font-semibold">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
         </div>
       )
     }
-  ];
+  ].filter(item => item.show);
 
   return (
     <div className="mt-8">
@@ -256,7 +264,18 @@ const MachineAccordion = ({ machine }: { machine: MachineData }) => {
           </AnimatePresence>
         </div>
       ))}
-      <div className="border-t border-border/80" />
+      <div className="border-t border-border/80 mb-6" />
+      <Button 
+        variant="default"
+        className="w-full py-7 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+        onClick={() => {
+          const whatsappUrl = `https://wa.me/919166562244?text=${encodeURIComponent(`I want to know more about ${machine.name}`)}`;
+          window.open(whatsappUrl, '_blank');
+        }}
+      >
+        <MessageCircle className="mr-2 h-5 w-5" />
+        Enquire More
+      </Button>
     </div>
   );
 };
