@@ -8,6 +8,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+import logo from '@/assets/logo.png';
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -96,13 +98,16 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" onClick={() => window.scrollTo(0,0)}>
           <motion.div
-            className="font-display text-xl font-bold tracking-tight"
+            className="flex items-center gap-2"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className={isSolid ? "text-foreground" : "text-white"}>BIKANER</span>
-            <span className="text-gradient-laser ml-1">LASER</span>
+            <img src={logo} alt="Bikaner Laser Logo" className="h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+            <div className="font-display text-lg md:text-xl font-bold tracking-tight whitespace-nowrap">
+              <span className={isSolid ? "text-foreground" : "text-white"}>BIKANER</span>
+              <span className="text-gradient-laser ml-1">LASER</span>
+            </div>
           </motion.div>
         </Link>
 

@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { FileDown, ArrowLeft, ZoomIn } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface PdfFile {
   name: string;
@@ -27,6 +28,7 @@ const DesignDetail = () => {
   const navigate = useNavigate();
   const [design, setDesign] = useState<DesignData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [viewingPdf, setViewingPdf] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDesignData = async () => {
@@ -60,7 +62,7 @@ const DesignDetail = () => {
               if (mediaRes.ok) {
                 const mediaData = await mediaRes.json();
                 if (mediaData.source_url) {
-                  const proxiedUrl = mediaData.source_url.replace('https://admin.sacredsouls.in', siteUrl);
+                  const proxiedUrl = mediaData.source_url.replace('https://admin.bikanerlaser.com', siteUrl);
                   pdfs.push({ name: "PDF Specification", url: proxiedUrl });
                 }
               }
@@ -87,6 +89,10 @@ const DesignDetail = () => {
 
     fetchDesignData();
   }, [id]);
+
+  const handleView = (url: string) => {
+    setViewingPdf(url);
+  };
 
   const handleDownload = async (url: string, fileName: string) => {
     try {
@@ -190,16 +196,25 @@ const DesignDetail = () => {
 
             <div className="space-y-4">
               {design.pdfs.length > 0 ? (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-4">
                   {design.pdfs.map((pdf, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => handleDownload(pdf.url, pdf.name)}
-                      className="py-7 px-10 rounded-2xl flex items-center gap-3 text-lg font-bold shadow-xl shadow-primary/20 w-fit"
-                    >
-                      <FileDown className="h-5 w-5" />
-                      Download PDF
-                    </Button>
+                    <div key={index} className="flex flex-wrap gap-4">
+                      <Button
+                        onClick={() => handleView(pdf.url)}
+                        variant="secondary"
+                        className="py-4 px-8 md:py-7 md:px-10 rounded-2xl flex items-center gap-3 text-base md:text-lg font-bold shadow-lg"
+                      >
+                        <ZoomIn className="h-5 w-5" />
+                        View PDF
+                      </Button>
+                      <Button
+                        onClick={() => handleDownload(pdf.url, pdf.name)}
+                        className="py-4 px-8 md:py-7 md:px-10 rounded-2xl flex items-center gap-3 text-base md:text-lg font-bold shadow-xl shadow-primary/20"
+                      >
+                        <FileDown className="h-5 w-5" />
+                        Download PDF
+                      </Button>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -214,7 +229,7 @@ const DesignDetail = () => {
                   const message = `Hello Bikaner Laser, I am interested in this design: ${design?.title}`;
                   window.open(`https://wa.me/919166562244?text=${encodeURIComponent(message)}`, '_blank');
                 }}
-                className="py-7 px-10 rounded-2xl text-lg font-bold w-fit mt-4"
+                className="py-4 px-8 md:py-7 md:px-10 rounded-2xl text-base md:text-lg font-bold w-fit mt-4"
               >
                 Enquire about this design
               </Button>
@@ -222,6 +237,25 @@ const DesignDetail = () => {
           </motion.div>
         </div>
       </div>
+      
+      {/* PDF View Modal */}
+      <Dialog open={!!viewingPdf} onOpenChange={(open) => !open && setViewingPdf(null)}>
+        <DialogContent className="max-w-5xl w-[95vw] h-[90vh] p-0 overflow-hidden bg-background">
+          <DialogHeader className="px-6 py-4 border-b">
+            <DialogTitle>PDF Specification Preview</DialogTitle>
+          </DialogHeader>
+          <div className="flex-grow w-full h-[calc(90vh-80px)]">
+            {viewingPdf && (
+              <iframe
+                src={`${viewingPdf}#toolbar=0`}
+                className="w-full h-full border-none"
+                title="PDF Preview"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );

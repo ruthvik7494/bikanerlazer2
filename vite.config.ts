@@ -10,12 +10,12 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       '/wp-json': {
-        target: 'https://admin.sacredsouls.in',
+        target: 'https://admin.bikanerlaser.com',
         changeOrigin: true,
         secure: false,
       },
       '/wp-content': {
-        target: 'https://admin.sacredsouls.in',
+        target: 'https://admin.bikanerlaser.com',
         changeOrigin: true,
         secure: false,
       },

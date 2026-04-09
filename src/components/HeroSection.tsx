@@ -53,12 +53,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
-            <a
-              href="/job-work"
-              className="bg-[#c8102e] hover:bg-[#a00d25] text-white px-8 py-4 rounded-sm font-display text-base font-bold tracking-wider uppercase transition-all shadow-lg hover:shadow-red-900/40"
-            >
-              Explore Services
-            </a>
+
             <button
               onClick={() => {
                 const message = `Hello Bikaner Laser, I would like to get in touch for an inquiry.`;

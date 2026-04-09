@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/wp-json/:path*",
-      "destination": "https://admin.sacredsouls.in/wp-json/:path*"
+      "destination": "https://admin.bikanerlaser.com/wp-json/:path*"
     },
     {
       "source": "/wp-content/:path*",
-      "destination": "https://admin.sacredsouls.in/wp-content/:path*"
+      "destination": "https://admin.bikanerlaser.com/wp-content/:path*"
     },
     {
       "source": "/(.*)",
