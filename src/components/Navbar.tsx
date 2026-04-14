@@ -103,7 +103,13 @@ const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <img src={logo} alt="Bikaner Laser Logo" className="h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+            <div className={`relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full transition-all duration-300 ${!isSolid ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)]" : ""}`}>
+              <img 
+                src={logo} 
+                alt="Bikaner Laser Logo" 
+                className="h-10 md:h-12 w-auto object-contain flex-shrink-0" 
+              />
+            </div>
             <div className="font-display text-lg md:text-xl font-bold tracking-tight whitespace-nowrap">
               <span className={isSolid ? "text-foreground" : "text-white"}>BIKANER</span>
               <span className="text-gradient-laser ml-1">LASER</span>

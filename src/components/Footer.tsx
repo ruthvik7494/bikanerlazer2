@@ -9,7 +9,9 @@ const Footer = () => (
         {/* Column 1: Brand & About */}
         <div className="space-y-8">
           <div className="flex items-center gap-4">
-            <img src={logo} alt="Bikaner Laser Logo" className="h-14 w-auto object-contain" />
+            <div className="bg-white p-2 rounded-full w-20 h-20 flex items-center justify-center shadow-lg">
+              <img src={logo} alt="Bikaner Laser Logo" className="h-14 w-auto object-contain" />
+            </div>
             <div className="font-display text-2xl md:text-2xl font-bold flex items-center gap-2 tracking-tight">
               <span className="text-white">BIKANER</span>
               <span className="text-primary italic">LASER</span>
