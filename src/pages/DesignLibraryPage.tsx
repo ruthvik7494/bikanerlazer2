@@ -30,7 +30,7 @@ const DesignLibraryPage = () => {
         const designsCategoryId = 22;
 
         const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
+          `/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
           { cache: 'no-store' }
         );
 
@@ -129,7 +129,7 @@ const DesignLibraryPage = () => {
                     <div className="mt-6 flex items-start justify-between">
                       <div>
                         <span className="font-body text-xs tracking-widest uppercase text-primary font-semibold mb-2 block">
-                          {design.category} Template
+                          {design.category}
                         </span>
                         <h3 className="font-display text-2xl font-bold text-foreground">
                           {design.title}

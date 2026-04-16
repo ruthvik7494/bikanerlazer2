@@ -1,10 +1,11 @@
 import { motion, useScroll, useTransform, useInView, animate, useMotionValue } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import aboutFacility from '@/assets/about-facility.png';
-import team1 from '@/assets/team-1.jpg';
-import team2 from '@/assets/team-2.jpg';
-import team3 from '@/assets/team-3.jpg';
-import team4 from '@/assets/team-4.jpg';
+import team1 from '@/assets/team-1.png';
+import team2 from '@/assets/team-2.jpeg';
+import team3 from '@/assets/team-3.jpeg';
+import team4 from '@/assets/team-4.png';
+import team5 from '@/assets/team-5.jpeg';
 
 const Counter = ({ value, suffix = "" }: { value: number; suffix?: string }) => {
   const count = useMotionValue(0);
@@ -44,10 +45,11 @@ const AboutSection = () => {
   ];
 
   const team = [
-    { image: team1, name: 'Bissa', designation: 'Founder' },
-    { image: team2, name: 'Ankit Bissa', designation: 'Technical Director' },
-    { image: team3, name: 'Rahul Soni', designation: 'Production Head' },
-    { image: team4, name: 'Priya Sharma', designation: 'Head of Design' },
+    { image: team1, name: 'Late Shri Panna Lal Bissa', designation: '1st Gen Founder', designation2: 'Started bussiness in 1965' },
+    { image: team5, name: 'Late Shri Magan Bissa', designation: '2nd Gen Founder', designation2: 'International Mountainer' },
+    { image: team2, name: 'Er.Rohitashwa Bissa', designation: '3rd Gen Founder , CEO', designation2: 'B.Tech , MBA' },
+    { image: team3, name: 'Er.Ojasvi Bissa', designation: 'CTO', designation2: 'B.Tech' },
+    { image: team4, name: 'Arohit Magan Bissa', designation: 'Chief Destruction Officer (CDO)', designation2: 'Certified Strength Tester' },
   ];
 
   return (
@@ -165,16 +167,29 @@ const AboutSection = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 md:opacity-60 group-hover:opacity-100 transition-opacity" />
 
                   {/* Desktop Title Overlay */}
-                  <div className="hidden md:block absolute bottom-0 left-0 p-6 w-full">
-                    <h3 className="font-display text-xl font-bold text-white mb-1">{member.name}</h3>
+                  <div className="hidden md:block absolute bottom-0 left-0 p-3 w-full">
+                    <h3 className="font-display text-xl font-bold text-white mb-1 break-words">{member.name}</h3>
                     <p className="font-body text-xs tracking-widest uppercase text-primary font-bold">{member.designation}</p>
+                    <p className="font-body text-xs tracking-widest uppercase text-primary font-bold">{member.designation2}</p>
+
                   </div>
                 </div>
 
                 {/* Mobile Title (Below Image) */}
-                <div className="md:hidden p-4 bg-card border-t border-border/50">
-                  <h3 className="font-display text-lg font-bold text-foreground mb-1">{member.name}</h3>
-                  <p className="font-body text-[10px] tracking-widest uppercase text-primary font-bold">{member.designation}</p>
+                <div className="md:hidden p-2 bg-card border-t border-border/50 flex-grow">
+                  <h3 className="font-display text-base font-bold text-foreground mb-1 leading-tight break-words">
+                    {member.name}
+                  </h3>
+                  <div className="space-y-1">
+                    <p className="font-body text-[9px] tracking-widest uppercase text-primary font-bold leading-tight">
+                      {member.designation}
+                    </p>
+                    {member.designation2 && (
+                      <p className="font-body text-[8px] tracking-widest uppercase text-muted-foreground font-medium leading-tight">
+                        {member.designation2}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}

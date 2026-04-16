@@ -38,9 +38,9 @@ const DesignDetail = () => {
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-        // 1. Fetch the specific product by ID
+        // 1. Fetch the specific product by ID using relative path via proxy
         const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
+          `/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
           { cache: 'no-store' }
         );
 
@@ -58,11 +58,12 @@ const DesignDetail = () => {
 
           if (pdfAttachmentId) {
             try {
-              const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
+              const mediaRes = await fetch(`/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
               if (mediaRes.ok) {
                 const mediaData = await mediaRes.json();
                 if (mediaData.source_url) {
-                  const proxiedUrl = mediaData.source_url.replace('https://admin.bikanerlaser.com', siteUrl);
+                  // Use relative URL to leverage Vite/Vercel proxy and avoid CORS issues for downloads
+                  const proxiedUrl = mediaData.source_url.replace('https://admin.bikanerlaser.com', '');
                   pdfs.push({ name: "PDF Specification", url: proxiedUrl });
                 }
               }
@@ -174,7 +175,7 @@ const DesignDetail = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <span className="font-body text-sm tracking-[0.3em] uppercase text-primary font-medium block mb-4">
-              {design.category} Template
+              {design.category}
             </span>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               {design.title}
@@ -237,7 +238,7 @@ const DesignDetail = () => {
           </motion.div>
         </div>
       </div>
-      
+
       {/* PDF View Modal */}
       <Dialog open={!!viewingPdf} onOpenChange={(open) => !open && setViewingPdf(null)}>
         <DialogContent className="max-w-5xl w-[95vw] h-[90vh] p-0 overflow-hidden bg-background">
