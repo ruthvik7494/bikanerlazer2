@@ -1,6 +1,12 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # Proxy for WordPress API and Content (Required for Hostinger)
+  # This replaces the functionality of vercel.json
+  RewriteRule ^wp-json/(.*) https://admin.bikanerlaser.com/wp-json/$1 [P,L]
+  RewriteRule ^wp-content/(.*) https://admin.bikanerlaser.com/wp-content/$1 [P,L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

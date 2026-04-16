@@ -30,7 +30,7 @@ const DesignLibraryPage = () => {
         const designsCategoryId = 22;
 
         const res = await fetch(
-          `/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
+          `${siteUrl}/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
           { cache: 'no-store' }
         );
 

@@ -40,7 +40,7 @@ const DesignDetail = () => {
 
         // 1. Fetch the specific product by ID using relative path via proxy
         const res = await fetch(
-          `/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
+          `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
           { cache: 'no-store' }
         );
 
@@ -58,12 +58,11 @@ const DesignDetail = () => {
 
           if (pdfAttachmentId) {
             try {
-              const mediaRes = await fetch(`/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
+              const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
               if (mediaRes.ok) {
                 const mediaData = await mediaRes.json();
                 if (mediaData.source_url) {
-                  // Use relative URL to leverage Vite/Vercel proxy and avoid CORS issues for downloads
-                  const proxiedUrl = mediaData.source_url.replace('https://admin.bikanerlaser.com', '');
+                  const proxiedUrl = mediaData.source_url;
                   pdfs.push({ name: "PDF Specification", url: proxiedUrl });
                 }
               }

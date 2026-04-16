@@ -33,7 +33,7 @@ const JobWork = () => {
         const jobWorkParentId = 17;
 
         const res = await fetch(
-          `/wp-json/wc/v3/products?category=${jobWorkParentId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
+          `${siteUrl}/wp-json/wc/v3/products?category=${jobWorkParentId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
           { cache: 'no-store' }
         );
 

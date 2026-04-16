@@ -44,9 +44,9 @@ const MachinerySection = () => {
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-        // Fetch products in 'machinery' category using relative path via proxy
+        // Fetch products in 'machinery' category
         const res = await fetch(
-          `/wp-json/wc/v3/products?category=16&consumer_key=${key}&consumer_secret=${secret}&_embed`,
+          `${siteUrl}/wp-json/wc/v3/products?category=16&consumer_key=${key}&consumer_secret=${secret}&_embed`,
           { cache: 'no-store' }
         );
         console.log("responsemain", res);
