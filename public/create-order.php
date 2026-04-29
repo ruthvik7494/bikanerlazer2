@@ -16,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // --- CONFIGURATION ---
 // Replace these with your actual Razorpay Keys
-$key_id = 'rzp_test_ShGAH4bFKjd1as'; 
-$key_secret = '5a4Foo4HmnCGzdnHGLTcCYlj';
+$key_id = 'rzp_live_SjAIb6nDVRbYFy'; 
+$key_secret = 'lD96hNGn57Ysl1O37S53dUYV';
 // ---------------------
 
 // Get the raw POST data

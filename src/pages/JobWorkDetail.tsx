@@ -94,64 +94,8 @@ const JobWorkDetail = () => {
     );
   }
 
-  const handlePayment = async () => {
-    if (!product?.price) {
-      alert("Please contact us for pricing details before purchasing.");
-      return;
-    }
-
-    try {
-      let orderId = '';
-      let amount = product.price;
-
-      // 1. Detect if we are running locally or on the server
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-      if (isLocal) {
-        console.log("Local Dev Mode: Using mock order ID");
-        orderId = 'order_mock_' + Math.random().toString(36).substr(2, 9);
-      } else {
-        // Create real order on Hostinger backend
-        const response = await fetch('/create-order.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: product.price })
-        });
-        const order = await response.json();
-        if (!order.id) throw new Error("Failed to create order");
-        orderId = order.id;
-        amount = (order.amount / 100).toString(); // Use the amount confirmed by server
-      }
-
-      // 2. Open Razorpay Checkout
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_ShGAH4bFKjd1as',
-        amount: Number(amount) * 100,
-        currency: "INR",
-        name: "Bikaner Laser",
-        description: `Purchase: ${product.title}`,
-        image: "/logo.png",
-        order_id: isLocal ? null : orderId, // Razorpay allows null order_id for simple local tests
-        handler: function (response: any) {
-          alert(`Payment Successful! ID: ${response.razorpay_payment_id}`);
-        },
-        prefill: {
-          name: "Test User",
-          email: "test@example.com",
-          contact: "9999999999"
-        },
-        theme: {
-          color: "#f97316"
-        }
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment failed:", error);
-      alert("Payment gateway is temporarily unavailable. Redirecting to WhatsApp...");
-      handleWhatsApp('buy'); // Fallback to WhatsApp if payment fails
-    }
+  const handlePayment = () => {
+    navigate('/checkout', { state: { product } });
   };
 
   const handleWhatsApp = (type: 'enquire' | 'buy') => {
