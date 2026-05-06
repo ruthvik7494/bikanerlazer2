@@ -29,10 +29,12 @@ const DesignLibraryPage = () => {
         // NOTE: Category ID of your "Designs" parent category from WordPress
         const designsCategoryId = 22;
 
-        const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
-          { cache: 'no-store' }
-        );
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const fetchUrl = isLocal 
+          ? `${siteUrl}/wp-json/wc/v3/products?category=${designsCategoryId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`
+          : `/get-products.php?category=${designsCategoryId}&per_page=100`;
+
+        const res = await fetch(fetchUrl, { cache: 'no-store' });
 
         if (res.ok) {
           const data = await res.json();

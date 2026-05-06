@@ -32,10 +32,12 @@ const JobWorkDetail = () => {
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-        const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
-          { cache: 'no-store' }
-        );
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const fetchUrl = isLocal 
+          ? `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`
+          : `/get-products.php?id=${id}`;
+
+        const res = await fetch(fetchUrl, { cache: 'no-store' });
 
         if (res.ok) {
           const data = await res.json();

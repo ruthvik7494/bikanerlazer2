@@ -44,11 +44,12 @@ const MachinerySection = () => {
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-        // Fetch products in 'machinery' category
-        const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products?category=16&consumer_key=${key}&consumer_secret=${secret}&_embed`,
-          { cache: 'no-store' }
-        );
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const fetchUrl = isLocal 
+          ? `${siteUrl}/wp-json/wc/v3/products?category=16&consumer_key=${key}&consumer_secret=${secret}&_embed`
+          : `/get-products.php?category=16`;
+
+        const res = await fetch(fetchUrl, { cache: 'no-store' });
         console.log("responsemain", res);
         if (res.ok) {
           const data = await res.json();
