@@ -52,10 +52,49 @@ const Index = () => {
         </div>
       </section>
 
+     
+
       <AboutSection />
       {/* <JobWorkSection />
       <MachinerySection />
       <DesignLibrary /> */}
+       {/* GOOGLE MY BUSINESS SECTION */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="max-w-4xl mx-auto text-center">
+            <SectionHeading label="Find Us Online" title="Google Business Profile" centered />
+            <p className="font-body text-lg text-muted-foreground leading-relaxed mb-8">
+              Discover Bikaner Laser on Google Maps! View our services, read customer reviews, and get directions to our location in Bikaner.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-card rounded-xl p-6 border border-border">
+                <h4 className="font-semibold text-foreground mb-2">Laser Cutting</h4>
+                <p className="text-sm text-muted-foreground">Precision cutting for metals and materials</p>
+              </div>
+              <div className="bg-card rounded-xl p-6 border border-border">
+                <h4 className="font-semibold text-foreground mb-2">Laser Engraving</h4>
+                <p className="text-sm text-muted-foreground">Custom engraving on various surfaces</p>
+              </div>
+              <div className="bg-card rounded-xl p-6 border border-border">
+                <h4 className="font-semibold text-foreground mb-2">Sheet Metal Fabrication</h4>
+                <p className="text-sm text-muted-foreground">Professional fabrication services</p>
+              </div>
+              <div className="bg-card rounded-xl p-6 border border-border">
+                <h4 className="font-semibold text-foreground mb-2">CNC Services</h4>
+                <p className="text-sm text-muted-foreground">Advanced CNC cutting solutions</p>
+              </div>
+            </div>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Bikaner+Laser"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors duration-300"
+            >
+              View on Google Maps
+            </a>
+          </div>
+        </div>
+      </section>
       <ContactSection />
       <Footer />
     </div>
