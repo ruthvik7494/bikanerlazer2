@@ -208,7 +208,6 @@ const Checkout = () => {
                         <User className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
                         <Input 
                           {...register('name')}
-                          placeholder="John Doe" 
                           className={cn("pl-10 h-11 md:h-12 rounded-xl text-sm md:text-base", errors.name && "border-destructive focus-visible:ring-destructive")}
                         />
                       </div>
@@ -222,7 +221,6 @@ const Checkout = () => {
                         <Input 
                           {...register('email')}
                           type="email" 
-                          placeholder="john@example.com" 
                           className={cn("pl-10 h-11 md:h-12 rounded-xl text-sm md:text-base", errors.email && "border-destructive focus-visible:ring-destructive")}
                         />
                       </div>
@@ -235,7 +233,6 @@ const Checkout = () => {
                         <Phone className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
                         <Input 
                           {...register('phone')}
-                          placeholder="9876543210" 
                           className={cn("pl-10 h-11 md:h-12 rounded-xl text-sm md:text-base", errors.phone && "border-destructive focus-visible:ring-destructive")}
                         />
                       </div>
@@ -248,7 +245,6 @@ const Checkout = () => {
                         <PhoneCall className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
                         <Input 
                           {...register('altPhone')}
-                          placeholder="9166562244" 
                           className="pl-10 h-11 md:h-12 rounded-xl text-sm md:text-base"
                         />
                       </div>
@@ -271,7 +267,6 @@ const Checkout = () => {
                       <Label htmlFor="address" className={cn("text-xs md:text-sm", errors.address ? "text-destructive" : "")}>Full Address *</Label>
                       <Textarea 
                         {...register('address')}
-                        placeholder="House No, Building, Street, Landmark..." 
                         className={cn("min-h-[100px] rounded-xl p-4 text-sm md:text-base", errors.address && "border-destructive focus-visible:ring-destructive")}
                       />
                       {errors.address && <p className="text-[10px] md:text-xs text-destructive mt-1">{errors.address.message}</p>}
@@ -282,7 +277,6 @@ const Checkout = () => {
                         <Label htmlFor="city" className={cn("text-xs md:text-sm", errors.city ? "text-destructive" : "")}>City *</Label>
                         <Input 
                           {...register('city')}
-                          placeholder="Bikaner" 
                           className={cn("h-11 md:h-12 rounded-xl text-sm md:text-base", errors.city && "border-destructive focus-visible:ring-destructive")}
                         />
                         {errors.city && <p className="text-[10px] md:text-xs text-destructive mt-1">{errors.city.message}</p>}
@@ -291,7 +285,6 @@ const Checkout = () => {
                         <Label htmlFor="state" className={cn("text-xs md:text-sm", errors.state ? "text-destructive" : "")}>State *</Label>
                         <Input 
                           {...register('state')}
-                          placeholder="Rajasthan" 
                           className={cn("h-11 md:h-12 rounded-xl text-sm md:text-base", errors.state && "border-destructive focus-visible:ring-destructive")}
                         />
                         {errors.state && <p className="text-[10px] md:text-xs text-destructive mt-1">{errors.state.message}</p>}
@@ -300,7 +293,6 @@ const Checkout = () => {
                         <Label htmlFor="pincode" className={cn("text-xs md:text-sm", errors.pincode ? "text-destructive" : "")}>Pincode *</Label>
                         <Input 
                           {...register('pincode')}
-                          placeholder="334001" 
                           className={cn("h-11 md:h-12 rounded-xl text-sm md:text-base", errors.pincode && "border-destructive focus-visible:ring-destructive")}
                         />
                         {errors.pincode && <p className="text-[10px] md:text-xs text-destructive mt-1">{errors.pincode.message}</p>}
@@ -373,9 +365,7 @@ const Checkout = () => {
                 </div>
               </div>
 
-              <div className="bg-primary/5 rounded-xl md:rounded-2xl p-3 md:p-4 text-[9px] md:text-[10px] uppercase tracking-[0.15em] md:tracking-widest text-primary/70 leading-relaxed font-bold text-center border border-primary/10">
-                Official Payment Gateway
-              </div>
+
             </motion.div>
           </div>
         </div>
