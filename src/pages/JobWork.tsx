@@ -31,14 +31,14 @@ const JobWork = () => {
         const siteUrl = import.meta.env.VITE_WC_URL;
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
-
-        // NOTE: Replace '25' with the actual Category ID of your "Job Work" parent category from WordPress
         const jobWorkParentId = 17;
 
-        const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products?category=${jobWorkParentId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`,
-          { cache: 'no-store' }
-        );
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const fetchUrl = isLocal 
+          ? `${siteUrl}/wp-json/wc/v3/products?category=${jobWorkParentId}&consumer_key=${key}&consumer_secret=${secret}&_embed&per_page=100`
+          : `/get-products.php?category=${jobWorkParentId}&per_page=100`;
+
+        const res = await fetch(fetchUrl, { cache: 'no-store' });
 
         if (res.ok) {
           const data = await res.json();

@@ -38,11 +38,12 @@ const DesignDetail = () => {
         const key = import.meta.env.VITE_WC_CONSUMER_KEY;
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
-        // 1. Fetch the specific product by ID using relative path via proxy
-        const res = await fetch(
-          `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`,
-          { cache: 'no-store' }
-        );
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const fetchUrl = isLocal 
+          ? `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`
+          : `/get-products.php?id=${id}`;
+
+        const res = await fetch(fetchUrl, { cache: 'no-store' });
 
         if (res.ok) {
           const product = await res.json();
@@ -58,7 +59,11 @@ const DesignDetail = () => {
 
           if (pdfAttachmentId) {
             try {
-              const mediaRes = await fetch(`${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`, { cache: 'no-store' });
+              const mediaFetchUrl = isLocal 
+                ? `${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`
+                : `/get-products.php?media_id=${pdfAttachmentId}`;
+                
+              const mediaRes = await fetch(mediaFetchUrl, { cache: 'no-store' });
               if (mediaRes.ok) {
                 const mediaData = await mediaRes.json();
                 if (mediaData.source_url) {
