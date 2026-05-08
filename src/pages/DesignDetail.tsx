@@ -39,7 +39,7 @@ const DesignDetail = () => {
         const secret = import.meta.env.VITE_WC_CONSUMER_SECRET;
 
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const fetchUrl = isLocal 
+        const fetchUrl = isLocal
           ? `${siteUrl}/wp-json/wc/v3/products/${id}?consumer_key=${key}&consumer_secret=${secret}`
           : `/get-products.php?id=${id}`;
 
@@ -59,10 +59,10 @@ const DesignDetail = () => {
 
           if (pdfAttachmentId) {
             try {
-              const mediaFetchUrl = isLocal 
+              const mediaFetchUrl = isLocal
                 ? `${siteUrl}/wp-json/wp/v2/media/${pdfAttachmentId}`
                 : `/get-products.php?media_id=${pdfAttachmentId}`;
-                
+
               const mediaRes = await fetch(mediaFetchUrl, { cache: 'no-store' });
               if (mediaRes.ok) {
                 const mediaData = await mediaRes.json();
@@ -204,20 +204,13 @@ const DesignDetail = () => {
                 <div className="flex flex-wrap gap-4">
                   {design.pdfs.map((pdf, index) => (
                     <div key={index} className="flex flex-wrap gap-4">
-                      <Button
-                        onClick={() => handleView(pdf.url)}
-                        variant="secondary"
-                        className="py-4 px-8 md:py-7 md:px-10 rounded-2xl flex items-center gap-3 text-base md:text-lg font-bold shadow-lg"
-                      >
-                        <ZoomIn className="h-5 w-5" />
-                        View PDF
-                      </Button>
+
                       <Button
                         onClick={() => handleDownload(pdf.url, pdf.name)}
                         className="py-4 px-8 md:py-7 md:px-10 rounded-2xl flex items-center gap-3 text-base md:text-lg font-bold shadow-xl shadow-primary/20"
                       >
                         <FileDown className="h-5 w-5" />
-                        Download PDF
+                        View / Download PDF
                       </Button>
                     </div>
                   ))}
