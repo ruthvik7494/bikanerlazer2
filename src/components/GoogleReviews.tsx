@@ -223,9 +223,6 @@ const GoogleReviews = () => {
                         {review.content}
                       </p>
 
-                      <button className="text-xs font-semibold text-primary hover:underline self-start">
-                        Read more
-                      </button>
                     </motion.div>
 
                   );
