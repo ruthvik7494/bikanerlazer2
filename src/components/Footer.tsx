@@ -89,7 +89,7 @@ const Footer = () => (
               </div>
               <div className="font-body text-sm text-gray-400">
                 <span className="text-white font-bold block mb-1">HQ Address:</span>
-                Magan Bissa Bhawan, Chowkhunti, Bikaner, Rajasthan, 334001
+                Gali no. 9, Magan Bissa Bhawan, Railway Crossing, near Chowkhunti, Pratap Basti, Bikaner, Rajasthan 334001
               </div>
             </li>
             <li className="flex items-center gap-4 group">
