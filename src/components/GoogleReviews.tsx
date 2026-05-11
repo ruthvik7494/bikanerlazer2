@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, CheckCircle2, MessageSquare } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, CheckCircle2, MessageSquare, X } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Review {
   id: number;
@@ -95,6 +101,7 @@ const reviews: Review[] = [
 const GoogleReviews = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
   const slideNext = () => {
     setDirection(1);
@@ -154,7 +161,22 @@ const GoogleReviews = () => {
             </div>
           </div>
 
-
+          <a 
+            href="https://www.google.com/search?q=Bikaner+Laser+Metal+CNC+Cutting#lrd=0x393fe370b368735b:0x5e56e09951662589,1" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group/btn relative inline-flex items-center gap-3 px-8 py-4 bg-[#4285F4] text-white rounded-2xl font-bold shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="bg-white rounded-full p-1 group-hover/btn:scale-110 transition-transform duration-300">
+              <svg viewBox="0 0 24 24" className="w-4 h-4">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.06-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+            </div>
+            See all reviews
+          </a>
         </div>
 
         {/* Carousel Container */}
@@ -219,9 +241,22 @@ const GoogleReviews = () => {
                         </div>
                       </div>
 
-                      <p className="text-sm text-foreground/80 leading-relaxed mb-4 flex-grow line-clamp-4">
-                        {review.content}
-                      </p>
+                      <div className="flex-grow">
+                        <div className="text-sm text-foreground/80 leading-relaxed mb-4 line-clamp-4">
+                          {review.content}
+                        </div>
+                        {review.content.length > 150 && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedReview(review);
+                            }}
+                            className="text-primary font-bold hover:text-primary/80 transition-colors inline-block"
+                          >
+                            ... Read More
+                          </button>
+                        )}
+                      </div>
 
                     </motion.div>
 
@@ -262,6 +297,59 @@ const GoogleReviews = () => {
           ))}
         </div>
       </div>
+
+      <Dialog open={!!selectedReview} onOpenChange={() => setSelectedReview(null)}>
+        <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-2xl p-0 overflow-hidden rounded-3xl">
+          <div className="p-8">
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex gap-4">
+                <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-bold text-2xl border border-border">
+                  {selectedReview?.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-xl text-foreground capitalize">{selectedReview?.name}</h4>
+                    {selectedReview?.verified && <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500/10" />}
+                  </div>
+                  <div className="text-sm text-muted-foreground mb-2">{selectedReview?.date}</div>
+                  <div className="flex text-[#FBBC05] gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <MessageSquare className="absolute -left-2 -top-2 w-12 h-12 text-primary/5 -z-10" />
+              <p className="text-foreground/90 leading-relaxed text-lg italic">
+                "{selectedReview?.content}"
+              </p>
+            </div>
+          </div>
+          
+          <div className="bg-muted/30 px-8 py-4 border-t border-border flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-white p-0.5 shadow-sm border border-border">
+                <svg viewBox="0 0 24 24" className="w-full h-full">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.06-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">Verified Google Review</span>
+            </div>
+            <button 
+              onClick={() => setSelectedReview(null)}
+              className="text-sm font-bold text-primary hover:underline"
+            >
+              Close
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
