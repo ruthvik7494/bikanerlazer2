@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 
 import logo from '@/assets/logo.png';
+import dmagLogo from '@/assets/D-mag_logo.png';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -39,7 +40,7 @@ const Navbar = () => {
       {links.map((link, i) => {
         const isHash = link.path.startsWith('/#');
         const isActive = location.pathname === link.path && !isHash;
-        
+
         return (
           <motion.div
             key={link.name}
@@ -50,11 +51,10 @@ const Navbar = () => {
           >
             <Link
               to={link.path}
-              className={`font-body text-sm font-medium transition-all duration-300 relative block ${
-                mobile 
-                  ? "text-foreground/80 hover:text-foreground text-lg py-4 border-b border-border w-full" 
-                  : isSolid ? "text-foreground/80 hover:text-primary" : "text-white/80 hover:text-white"
-              } ${isActive ? "text-primary hover:text-primary font-boldScale" : ""}`}
+              className={`font-body text-sm font-medium transition-all duration-300 relative block ${mobile
+                ? "text-foreground/80 hover:text-foreground text-lg py-4 border-b border-border w-full"
+                : isSolid ? "text-foreground/80 hover:text-primary" : "text-white/80 hover:text-white"
+                } ${isActive ? "text-primary hover:text-primary font-boldScale" : ""}`}
               onClick={() => mobile && setOpen(false)}
             >
               {link.name}
@@ -66,7 +66,7 @@ const Navbar = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.5 }}
-        className={mobile ? "mt-6" : ""}
+        className={mobile ? "mt-6 flex flex-col gap-4" : "flex items-center gap-4 ml-4"}
       >
         <button
           onClick={() => {
@@ -74,12 +74,18 @@ const Navbar = () => {
             window.open(`https://wa.me/919166562244?text=${encodeURIComponent(message)}`, '_blank');
             if (mobile) setOpen(false);
           }}
-          className={`bg-primary text-primary-foreground px-5 py-2 rounded-sm font-body text-sm font-medium hover:opacity-90 transition-opacity inline-block ${
-            mobile ? "w-full text-center text-lg py-3" : ""
-          }`}
+          className={`bg-primary text-primary-foreground px-5 py-2 rounded-sm font-body text-sm font-medium hover:opacity-90 transition-opacity inline-block flex-shrink-0 ${mobile ? "w-full text-center text-lg py-3" : ""
+            }`}
         >
           Get a Quote
         </button>
+        <div className={`relative flex items-center justify-center transition-all duration-300`}>
+          <img
+            src={dmagLogo}
+            alt="D-mag Logo"
+            className="h-12 md:h-16 w-auto object-contain flex-shrink-0 border-2 border-white rounded-md p-1 bg-white/50"
+          />
+        </div>
       </motion.div>
     </>
   );
@@ -87,7 +93,7 @@ const Navbar = () => {
   return (
     <motion.nav
       className="fixed top-0 left-0 right-0 z-50 px-6 lg:px-12 py-4"
-      animate={{ 
+      animate={{
         backgroundColor: isSolid ? "rgba(255, 255, 255, 0.98)" : "rgba(220, 15, 12, 0)",
         backdropFilter: isSolid ? "blur(10px)" : "none",
         boxShadow: isSolid ? "0 4px 20px rgba(0,0,0,0.08)" : "none",
@@ -96,7 +102,7 @@ const Navbar = () => {
       transition={{ duration: 0.3 }}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" onClick={() => window.scrollTo(0,0)}>
+        <Link to="/" onClick={() => window.scrollTo(0, 0)}>
           <motion.div
             className="flex items-center gap-2"
             initial={{ opacity: 0, x: -20 }}
@@ -104,10 +110,10 @@ const Navbar = () => {
             transition={{ duration: 0.6 }}
           >
             <div className={`relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full transition-all duration-300 ${!isSolid ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)]" : ""}`}>
-              <img 
-                src={logo} 
-                alt="Bikaner Laser Logo" 
-                className="h-10 md:h-12 w-auto object-contain flex-shrink-0" 
+              <img
+                src={logo}
+                alt="Bikaner Laser Logo"
+                className="h-10 md:h-12 w-auto object-contain flex-shrink-0"
               />
             </div>
             <div className="font-display text-lg md:text-xl font-bold tracking-tight whitespace-nowrap">
